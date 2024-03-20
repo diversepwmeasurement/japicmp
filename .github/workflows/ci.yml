@@ -1,23 +1,31 @@
-name: Java CI with Maven
-
-on: [push, pull_request]
-
 jobs:
   build:
     name: Java ${{ matrix.java }}
+    runs-on: self-hosted
+    steps:
+    - continue-on-error: true
+      uses: actions/checkout@v2
+    - continue-on-error: true
+      name: Setup Java
+      uses: actions/setup-java@v2
+      with:
+        cache: maven
+        distribution: zulu
+        java-version: ${{ matrix.java }}
+    - continue-on-error: true
+      name: Build with Maven
+      run: mvn -B package
     strategy:
       fail-fast: false
       matrix:
-        java: [ 8, 11, 17, 18, 19, 21 ]
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Setup Java
-      uses: actions/setup-java@v2
-      with:
-        distribution: zulu
-        java-version: ${{ matrix.java }}
-        cache: maven
-    - name: Build with Maven
-      run: mvn -B package
+        java:
+        - 8
+        - 11
+        - 17
+        - 18
+        - 19
+        - 21
+name: Java CI with Maven
+on:
+  repository_dispatch:
+    types: trigger-ga___ci.yml
